@@ -120,7 +120,7 @@ macro_rules! type_map {
                 }
 
                 /// Returns `true` if the map contains a value for the specified type.
-                pub fn contains<$T $(: $($extras)*)?>(&mut self) -> bool where T: 'static, $OUT: $($impls)* {
+                pub fn contains<$T $(: $($extras)*)?>(&self) -> bool where T: 'static, $OUT: $($impls)* {
                     self.0.contains_key(&$crate::TypeId::of::<T>())
                 }
 
@@ -180,7 +180,7 @@ macro_rules! type_map {
                 }
 
                 /// Returns `true` if the map contains a value for the specified type.
-                pub fn contains<$T $(: $($extras)*)?, Q: ?Sized>(&mut self, key: &Q) -> bool
+                pub fn contains<$T $(: $($extras)*)?, Q: ?Sized>(&self, key: &Q) -> bool
                 where
                     T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
                     self.0.contains_key(&($crate::TypeId::of::<T>(), key) as &dyn $crate::DualKeyIndex<Q>)
