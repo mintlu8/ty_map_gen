@@ -1,0 +1,31 @@
+[package]
+name = "ty_map_gen"
+version = "0.1.0"
+edition = "2021"
+
+authors = ["Mincong Lu <mintlux667@gmail.com>"]
+license = "MIT OR Apache-2.0"
+
+readme = "README.md"
+repository = "https://github.com/mintlu8/ty_map_gen"
+description = """
+A type projecting map generator.
+"""
+keywords = ["typemap"]
+
+[lib]
+doctest = false
+
+[dependencies]
+dyn-clone = "1.0.17"
+dyn-hash = "0.2.0"
+erased-serde = { version = "0.4.5", optional = true }
+paste = "1.0.15"
+
+[dev-dependencies]
+criterion = "0.5.1"
+rustc-hash = "1.1.0"
+
+[[bench]]
+name = "bench"
+harness = false
