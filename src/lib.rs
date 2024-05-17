@@ -8,6 +8,7 @@ pub use std::{
     collections::{BTreeMap, HashMap},
     hash::Hash,
     hash::RandomState,
+    iter::{Extend, IntoIterator},
 };
 
 #[doc(hidden)]
@@ -120,32 +121,37 @@ macro_rules! type_map {
                 }
 
                 /// Returns `true` if the map contains a value for the specified type.
-                pub fn contains<$T $(: $($extras)*)?>(&self) -> bool where T: 'static, $OUT: $($impls)* {
+                pub fn contains<$T $(: $($extras)*)?>(&self) -> bool where $T: 'static, $OUT: $($impls)* {
                     self.0.contains_key(&$crate::TypeId::of::<T>())
                 }
 
                 /// Inserts a value into the map.
-                pub fn insert<$T $(: $($extras)*)?>(&mut self, item: $OUT) -> Option<$OUT> where T: 'static, $OUT: $($impls)* {
+                pub fn insert<$T $(: $($extras)*)?>(&mut self, item: $OUT) -> Option<$OUT> where $T: 'static, $OUT: $($impls)* {
                     self.0.insert($crate::TypeId::of::<T>(), Box::new(item))
                         .map(|x| unsafe {x.downcast_unchecked::<$OUT>()})
                 }
 
                 /// Removes a value from the map.
-                pub fn remove<$T $(: $($extras)*)?>(&mut self) -> Option<$OUT> where T: 'static, $OUT: $($impls)* {
+                pub fn remove<$T $(: $($extras)*)?>(&mut self) -> Option<$OUT> where $T: 'static, $OUT: $($impls)* {
                     self.0.remove(&$crate::TypeId::of::<T>())
                         .map(|x| unsafe {x.downcast_unchecked::<$OUT>()})
                 }
 
                 /// Get a value into the map.
-                pub fn get<$T $(: $($extras)*)?>(&self) -> Option<&$OUT> where T: 'static, $OUT: $($impls)* {
+                pub fn get<$T $(: $($extras)*)?>(&self) -> Option<&$OUT> where $T: 'static, $OUT: $($impls)* {
                     self.0.get(&$crate::TypeId::of::<T>())
                         .and_then(|x| unsafe {([<__ $ty Internal>]::__as_ref_ptr(&**x) as *const $OUT).as_ref()})
                 }
 
                 /// Get a mutable value into the map.
-                pub fn get_mut<$T $(: $($extras)*)?>(&mut self) -> Option<&mut $OUT> where T: 'static, $OUT: $($impls)* {
+                pub fn get_mut<$T $(: $($extras)*)?>(&mut self) -> Option<&mut $OUT> where $T: 'static, $OUT: $($impls)* {
                     self.0.get_mut(&$crate::TypeId::of::<T>())
                     .and_then(|x| unsafe {([<__ $ty Internal>]::__as_mut_ptr(&mut **x) as *mut $OUT).as_mut()})
+                }
+
+                /// Extend by another instance of `Self`.
+                pub fn extend(&mut self, other: Self) {
+                    self.0.extend(other.0)
                 }
             }
         }
@@ -182,14 +188,14 @@ macro_rules! type_map {
                 /// Returns `true` if the map contains a value for the specified type.
                 pub fn contains<$T $(: $($extras)*)?, Q: ?Sized>(&self, key: &Q) -> bool
                 where
-                    T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
+                    $T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
                     self.0.contains_key(&($crate::TypeId::of::<T>(), key) as &dyn $crate::DualKeyIndex<Q>)
                 }
 
                 /// Inserts a value into the map.
                 pub fn insert<$T $(: $($extras)*)?>(&mut self, key: $K, item: $OUT) -> Option<$OUT>
                 where
-                    T: 'static, $OUT: $($impls)* {
+                    $T: 'static, $OUT: $($impls)* {
                     self.0.insert(($crate::TypeId::of::<T>(), key), Box::new(item))
                         .map(|x| unsafe {x.downcast_unchecked::<$OUT>()})
                 }
@@ -197,7 +203,7 @@ macro_rules! type_map {
                 /// Removes a value from the map.
                 pub fn remove<$T $(: $($extras)*)?, Q: ?Sized>(&mut self, key: &Q) -> Option<$OUT>
                 where
-                    T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
+                    $T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
                     self.0.remove(&($crate::TypeId::of::<T>(), key) as &dyn $crate::DualKeyIndex<Q>)
                         .map(|x| unsafe {x.downcast_unchecked::<$OUT>()})
                 }
@@ -205,7 +211,7 @@ macro_rules! type_map {
                 /// Get a value into the map.
                 pub fn get<$T $(: $($extras)*)?, Q: ?Sized>(&self, key: &Q) -> Option<&$OUT>
                 where
-                    T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
+                    $T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
                     self.0.get(&($crate::TypeId::of::<T>(), key) as &dyn $crate::DualKeyIndex<Q>)
                         .and_then(|x| unsafe {([<__ $ty Internal>]::__as_ref_ptr(&**x) as *const $OUT).as_ref()})
                 }
@@ -213,9 +219,14 @@ macro_rules! type_map {
                 /// Get a mutable value into the map.
                 pub fn get_mut<$T $(: $($extras)*)?, Q: ?Sized>(&mut self, key: &Q) -> Option<&mut $OUT>
                 where
-                    T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
+                    $T: 'static, $OUT: $($impls)*, Q: ::std::cmp::Ord + ::std::hash::Hash, $K: std::borrow::Borrow<Q> {
                     self.0.get_mut(&($crate::TypeId::of::<T>(), key) as &dyn $crate::DualKeyIndex<Q>)
                         .and_then(|x| unsafe {([<__ $ty Internal>]::__as_mut_ptr(&mut **x) as *mut $OUT).as_mut()})
+                }
+
+                /// Extend by another instance of `Self`.
+                pub fn extend(&mut self, other: Self) {
+                    self.0.extend(other.0)
                 }
             }
         }
