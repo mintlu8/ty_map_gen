@@ -5,7 +5,7 @@ use ty_map_gen::type_map;
 
 type_map!(
     #[derive(Debug)]
-    pub BaseMap where (T, String) => T [Debug] as FxHashMap
+    pub BaseMap where (U, String) => U [Debug] as FxHashMap
 );
 
 #[test]
