@@ -8,7 +8,6 @@ type_map!(
     pub BaseMap where T => T [std::fmt::Debug] as FxHashMap
 );
 
-
 #[test]
 pub fn test() {
     let mut map = BaseMap::new();

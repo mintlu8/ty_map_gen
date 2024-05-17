@@ -68,7 +68,7 @@ fn get<T: Asset + 'static>(&self, key: &Q) -> Option<&Handle<T>> where Handle<T>
 
 ## Performance
 
-This crate is faster than a naive implementation with `Box<dyn Any>`
+This crate has faster lookup (`get` and `get_mut`) than a naive implementation with `Box<dyn Any>`
 since downcasting is unchecked.
 
 ## License
