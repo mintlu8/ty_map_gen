@@ -2,6 +2,9 @@ use std::{any::Any, cmp::Ordering};
 
 pub use dyn_clone::DynClone as Clone;
 pub use dyn_hash::DynHash as Hash;
+pub use std::fmt::{Debug, Display};
+pub use std::future::Future;
+pub use std::iter::Iterator;
 
 #[cfg(feature = "erased-serde")]
 pub use erased_serde::Serialize;

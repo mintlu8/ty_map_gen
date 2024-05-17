@@ -41,6 +41,9 @@ define a new `type` with signature `Map<Key, Value>`.
 Bounds (in braces `[]`) are optional in the macro. The bounds on the right hand side must be object safe,
 excluding `Clone`, `PartialEq`, `Eq`, `Ord`, `PartialOrd`, `Hash` and `Serialize`,
 which are special handled. Additionally only one trait from `std::cmp` is allowed to be specified.
+If you need `Send` and `Sync` this is where to add them.
+
+Currently the right hand side uses a unique scope, therefore you must supply fully qualified trait paths.
 
 ## Methods and Implementations
 
