@@ -22,4 +22,7 @@ pub fn test() {
     assert_eq!(map.get::<i32, _>("Cat"), Some(&5));
     assert_eq!(map.get::<i32, _>("Cat"), Some(&5));
     assert_eq!(map.get::<i32, _>("Fish"), None);
+
+    assert_eq!(map.remove::<&str, _>("Dog"), Some("Bud"));
+    assert_eq!(map.remove::<&str, _>("Cat"), Some("Kate"));
 }
